@@ -1,6 +1,16 @@
-<form action="" method="post">
-    {% csrf_token %}
-    <p>정말 삭제하시겠습니까?</p>
+{% extends "blog/layout.html" %}
 
-    <input type="submit" value="삭제">
-</form>
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <p class="alert alert-danger">정말 삭제하시겠습니까?</p>
+
+                    <input type="submit" value="삭제" class="btn btn-danger">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
