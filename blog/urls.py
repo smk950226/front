@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^(?P<post_pk>\d+)/comments/(?P<pk>\d+)/delete/$', views.comment_delete, name='comment_delete'),
 
     url(r'^posts\.json$', views.post_list_json),
+
+    url(r'^api/v1/', include('blog.api')),
 ]
