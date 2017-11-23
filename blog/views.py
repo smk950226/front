@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, UpdateView, DeleteView, C
 from .models import Post, Comment
 from django.urls import reverse_lazy
 
-index = ListView.as_view(model=Post, template_name='blog/index.html')
+index = ListView.as_view(model=Post, template_name='blog/index.html', paginate_by=10)
 
 post_detail = DetailView.as_view(model=Post)
 
