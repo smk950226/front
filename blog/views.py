@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, resolve_url
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from .models import Post, Comment
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 
 class PostListView(ListView):
     model = Post
@@ -64,3 +65,12 @@ class CommentDeleteView(DeleteView):
 
 
 comment_delete = CommentDeleteView.as_view()
+
+def post_list_json(request):
+    qs = Post.objects.all()
+    
+    post_list = []
+    for post in qs:
+        post_list.append({'id': post.id, 'title': post.title, 'content': post.content, 'created_at': post.created_at, 'updated_at': post.updated_at})
+
+    return JsonResponse(post_list, safe=False)
