@@ -7,10 +7,9 @@
             var is_loading = false;
             var current_page = null;
 
-            $win.scroll(function() {
-                var diff = $(document).height() - $win.height();
-                
-                if ( (!is_loading) && (diff == parseInt($win.scrollTop())) ) {
+            var load_more = function() {
+                if (!is_loading) {
+
                     //var search_params = new URLSearchParams(window.location.search); // 현재 페이지의 GET인자를 가공
                     //var current_page = parseInt(search_params.get('page')) || 1; // GET인자 page를 획득하고 없으면 1을 반환
                     var next_page = (current_page || 1) + 1;
@@ -33,7 +32,17 @@
                         is_loading = false;
                     });
                 };
+            }
+
+            $win.scroll(function() {
+                var diff = $(document).height() - $win.height();
+                
+                if (diff == parseInt($win.scrollTop()) ) {
+                    load_more();
+                };
             });
+
+            $('#load-more-btn').click(load_more);
         });
     </script>
 {% endblock %}
@@ -47,6 +56,8 @@
                         {% include "blog/_post_list.html" %}
                     </tbody>
                 </table>
+
+                <a class="btn btn-primary" id="load-more-btn">Load More</a>
 
                 <hr>
                 <a href="{% url "blog:post_new" %}" class="btn btn-primary">새 글쓰기</a>
