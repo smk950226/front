@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from .serializers import PostSerializer
 from rest_framework.renderers import JSONRenderer
+from django.template.defaultfilters import truncatewords
 
 class PostListView(ListView):
     model = Post
@@ -18,7 +19,21 @@ class PostListView(ListView):
 
 index = PostListView.as_view(model=Post, template_name='blog/index.html', paginate_by=10)
 
-post_detail = DetailView.as_view(model=Post)
+
+class PostDetailView(DetailView):
+    model = Post
+
+    def render_to_response(self, context):
+        if self.request.is_ajax():
+            return JsonResponse({
+                'title': self.object.title,
+                'summary': truncatewords(self.object.content,100),
+            })
+        return super().render_to_response(context)
+
+
+post_detail = PostDetailView.as_view()
+
 
 post_edit = UpdateView.as_view(model=Post, fields='__all__')
 
