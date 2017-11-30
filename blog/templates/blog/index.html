@@ -1,28 +1,39 @@
 {% extends "blog/layout.html" %}
 
 {% block extra_body %}
-    <script>            
+    <script>
         $(function() {
-            '{% for page_number in paginator.page_range %}'
-            $('#page-{{ page_number }}-btn').click(function() {
-                $.get("?page={{ page_number }}")
-                .done(function(html) {
-                    $('#post-list-wrapper').html(html);
-                    var state_obj = {};
-                    var title = '';
-                    var url = "?page={{ page_number }}";
-                    history.pushState(state_obj, title, url);
-                })
-                .fail(function() {
-                    console.log('fail');
-                })
-                .always(function() {
-                    console.log('always');
-                });
-                return false;
+            var $win = $(window);
+            var is_loading = false;
+            var current_page = null;
+
+            $win.scroll(function() {
+                var diff = $(document).height() - $win.height();
+                
+                if ( (!is_loading) && (diff == parseInt($win.scrollTop())) ) {
+                    //var search_params = new URLSearchParams(window.location.search); // 현재 페이지의 GET인자를 가공
+                    //var current_page = parseInt(search_params.get('page')) || 1; // GET인자 page를 획득하고 없으면 1을 반환
+                    var next_page = (current_page || 1) + 1;
+                    var next_page_url = '?page=' + next_page; // 다음 페이지를 요청하기 위한 URL생성
+
+                    is_loading = true;
+
+                    $.get(next_page_url).
+                    done(function(html) {
+                        $('#post-list tbody').append(html);
+                        current_page = next_page;
+                        //history.pushState({}, '', next_page_url);
+                    }).
+                    fail(function(xhr, textStatus, error) {
+                        console.log(textStatus);
+                    })
+                    .always(function() {
+                        console.log("always");
+                        console.log(current_page);
+                        is_loading = false;
+                    });
+                };
             });
-            '{% endfor %}'
-            
         });
     </script>
 {% endblock %}
@@ -30,9 +41,17 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col-sm-12" id="post-list-wrapper">
-                {% include "blog/_post_list.html" %}
+            <div class="col-sm-12">
+                <table class="table table-bordered table-hover" id="post-list">
+                    <tbody>
+                        {% include "blog/_post_list.html" %}
+                    </tbody>
+                </table>
+
+                <hr>
+                <a href="{% url "blog:post_new" %}" class="btn btn-primary">새 글쓰기</a>
             </div>
         </div>
     </div>
 {% endblock content %}
+
