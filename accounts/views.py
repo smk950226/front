@@ -4,6 +4,7 @@ from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 class SignupFormView(CreateView):
@@ -11,7 +12,25 @@ class SignupFormView(CreateView):
     template_name = 'accounts/signup_form.html'
     success_url = settings.LOGIN_URL
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.is_ajax():
+            return JsonResponse({'next_url': self.get_success_url()})
+        return response
+
+    def get_template_names(self):
+        if self.request.is_ajax():
+            return ['accounts/_signup_form.html']
+        return ['accounts/signup_form.html']
+
+
 class LoginView(AuthLoginView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.request.is_ajax():
+            return JsonResponse({'next_url': self.get_success_url()})
+        return response
+
     def get_template_names(self):
         if self.request.is_ajax():
             return ['accounts/_login.html']
