@@ -6,6 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from .serializers import PostSerializer
 from rest_framework.renderers import JSONRenderer
 from django.template.defaultfilters import truncatewords
+from .forms import CommentForm
 
 class PostListView(ListView):
     model = Post
@@ -30,6 +31,11 @@ class PostDetailView(DetailView):
                 'summary': truncatewords(self.object.content,100),
             })
         return super().render_to_response(context)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comment_form'] = CommentForm()
+        return context
 
 
 post_detail = PostDetailView.as_view()
@@ -50,7 +56,7 @@ post_new = CreateView.as_view(model=Post, fields='__all__')
 
 class CommentCreateView(CreateView):
     model = Comment
-    fields = ['message']
+    form_class = CommentForm
 
     def form_valid(self, form):
         comment = form.save(commit=False)
@@ -65,7 +71,7 @@ comment_new = CommentCreateView.as_view()
 
 class CommentUpdateView(UpdateView):
     model = Comment
-    fields = ['message']
+    form_class = CommentForm
 
     def get_success_url(self):
         return resolve_url(self.object.post)
