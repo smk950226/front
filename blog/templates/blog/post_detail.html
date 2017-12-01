@@ -4,96 +4,6 @@
 {% block extra_body %}
 <script>
     $(function() {
-        $(document).on('click', '.comment-form-btn', function(e) {
-            e.preventDefault();
-
-            var action_url = $(this).attr('href');
-            var target_id = $(this).data('target-id');
-
-            $.get(action_url)
-            .done(function(form_html) {
-                var $modal = $('#comment-form-modal');
-
-                $modal.find('.modal-body').html(form_html);
-                $form = $modal.find('.modal-body form');
-                $form.attr('action', action_url);
-
-                if (target_id) {
-                    $form.attr('data-target-id', target_id);
-                }
-                else {
-                    $form.removeData('target-id');
-                }
-
-                $modal.on('shown.bs.modal', function(e) {
-                    $(this).find('textarea:first').focus();
-                });
-
-                $modal.modal();
-            })
-            .fail(function(xhr, textStatus, error) {
-                alert('failed : ' + error);
-            });
-
-            //$('#comment-form-modal').modal();
-        });
-
-        $(document).on('submit', '#comment-form-modal form', function(e) {
-            e.preventDefault();
-
-            var $form = $(this);
-            var $submit = $form.find('[type=submit]');
-
-            $submit.prop('disabled', true);
-
-            $form.ajaxSubmit({
-                success: function(response, statusText, xhr, $form) {
-                    var html = response;
-                    var $resp = $(html);
-                    var target_id = $form.data('target-id');
-    
-                    if ( $resp.find('.has-error').length > 0) {
-                        var fields_html = $resp.html();
-                        $('#comment-form-modal .modal-body form').html(fields_html);
-                    }
-                    else {
-                        if (target_id) {
-                            $('#'+ target_id ).html($resp.html());
-                        }
-                        else {
-                            $resp.prependTo('#comment-list');
-                        }
-                        $('#comment-form-modal').modal('hide');
-                        $form[0].reset();
-                    }
-                },
-                error: function(xhr, textStatus, error) {
-                    alert('failed : '+ error);
-                },
-                complete: function(xhr, textStatus) {
-                    //$submit.prop('disabled', false);                    
-                }
-            });
-        });
-
-        $(document).on('click', '.ajax-post-confirm', function(e){
-            e.preventDefault();
-
-            var url = $(this).attr('href');
-            var target_id = $(this).data('target-id');
-            var message = $(this).data('message');
-
-            if(confirm(message)) {
-                $.post(url)
-                .done(function() {
-                    $('#' + target_id).remove();
-                })
-                .fail(function(xhr, textStatus, error) {
-                    alert('failed : ' + error);
-                });
-            }
-        });
-
         $('#check-comment').click(function(e) {
             e.preventDefault();
 
@@ -129,7 +39,7 @@
                 
                 <hr>
                 
-                <a href="{% url "blog:comment_new" post.pk %}" class="comment-form-btn btn btn-primary btn-block">댓글쓰기</a>
+                <a href="{% url "blog:comment_new" post.pk %}" class="modal-form-btn btn btn-primary btn-block">댓글쓰기</a>
 
                 <a id="check-comment" href="" class="btn btn-primary btn-block">새 댓글 확인</a>
                 <div id="comment-list">
@@ -143,23 +53,4 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="comment-form-modal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ post.title }}</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                </div>
-                </div>
-            </div>
-        </div>
 {% endblock %}

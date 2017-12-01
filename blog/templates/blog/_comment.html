@@ -13,7 +13,7 @@
         <h4 class="media-heading">Media heading</h4>
         <p>{{ comment.message }}</p>
         &dash; 
-        <a href="{% url "blog:comment_edit" comment.post.pk comment.pk %}" class="comment-form-btn" data-target-id="comment-{{ comment.pk }}">
+        <a href="{% url "blog:comment_edit" comment.post.pk comment.pk %}" class="modal-form-btn" data-target-id="comment-{{ comment.pk }}">
             <small>{{ comment.updated_at }}</small>
         </a>
         <a href="{% url "blog:comment_delete" comment.post.pk comment.pk %}" class="ajax-post-confirm" data-target-id="comment-{{ comment.pk }}" data-message="삭제하시겠습니까?">
