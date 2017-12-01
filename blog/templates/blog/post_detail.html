@@ -13,6 +13,9 @@
             var $form = $(this);
             var url = $form.attr('action');
             var data = $form.serialize();
+            var $submit = $form.find('[type=submit]');
+
+            $submit.prop('disabled', true);
 
             $.post(url, data)
             .done(function(obj) {
@@ -26,8 +29,11 @@
             })
             .fail(function(xhr, textStatus, error) {
                 alert('failed :' +error)
+            })
+            .always(function() {
+                $submit.prop('disabled', false);
             });
-        })
+        });
 
         $(document).on('click', '.ajax-post-confirm', function(e){
             e.preventDefault();
