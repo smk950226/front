@@ -4,6 +4,39 @@
 {% block extra_body %}
 <script>
     $(function() {
+        $('#comment-form').submit(function(e) {
+            e.preventDefault();
+
+            var $form = $(this);
+            var url = $form.attr('action');
+            var data = $form.serialize();
+
+            $.post(url, data)
+            .done(function(obj) {
+                if(obj.is_success == false) {
+                    alert(obj.message);
+                }
+                else {
+                    $('#comment-list').prepend([
+                        '<li id="comment-' + obj.id + '">',
+                             obj.message,
+                              '&dash;',
+                               '<a href="' + obj.edit_url + '">', '<small>' + obj.updated_at + '<small>',
+                                    '</a>',
+                                     '<a href="' + obj.delete_url + '" class="ajax-post-confirm" data-target-id="comment-' + obj.id + '" data-message="정말 삭제하시겠습니까?">',
+                                          '<small>삭제</small>',
+                                          '</a>',
+                                          '</li>'
+                    ].join(''));
+
+                    $form[0].reset();
+                }
+            })
+            .fail(function(xhr, textStatus, error) {
+                alert('failed :' +error)
+            });
+        })
+
         $(document).on('click', '.ajax-post-confirm', function(e){
             e.preventDefault();
 
@@ -35,14 +68,14 @@
                 
                 <hr>
 
-                <form action="{% url "blog:comment_new" post.pk %}" method="post">
+                <form id="comment-form" action="{% url "blog:comment_new" post.pk %}" method="post">
                     {% csrf_token %}
 
                     {% bootstrap_form comment_form %}
                     <input type="submit" class="btn btn-primary btn-block">
                 </form>                
                 
-                <ul>
+                <ul id="comment-list">
                     {% for comment in post.comment_set.all %}
                         <li id="comment-{{ comment.pk }}">
                             {{ comment.message }}
