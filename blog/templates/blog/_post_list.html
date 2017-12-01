@@ -2,7 +2,7 @@
 <tr>
     <td>
         <a href="{{ post.get_absolute_url }}">
-            {{ post.title }}
+            {{ post.title }} {% if post.comment_set.count != 0 %}[{{ post.comment_set.count }}]{% endif %}
         </a>
     </td>
 </tr>
