@@ -42,37 +42,37 @@
             e.preventDefault();
 
             var $form = $(this);
-            var url = $form.attr('action');
-            var data = $form.serialize();
             var $submit = $form.find('[type=submit]');
 
             $submit.prop('disabled', true);
 
-            $.post(url, data)
-            .done(function(html) {
-                var $resp = $(html);
-                var target_id = $form.data('target-id');
-
-                if ( $resp.find('.has-error').length > 0) {
-                    var fields_html = $resp.html();
-                    $('#comment-form-modal .modal-body form').html(fields_html);
-                }
-                else {
-                    if (target_id) {
-                        $('#'+ target_id ).html($resp.html());
+            $form.ajaxSubmit({
+                success: function(response, statusText, xhr, $form) {
+                    var html = response;
+                    var $resp = $(html);
+                    var target_id = $form.data('target-id');
+    
+                    if ( $resp.find('.has-error').length > 0) {
+                        var fields_html = $resp.html();
+                        $('#comment-form-modal .modal-body form').html(fields_html);
                     }
                     else {
-                        $resp.prependTo('#comment-list');
+                        if (target_id) {
+                            $('#'+ target_id ).html($resp.html());
+                        }
+                        else {
+                            $resp.prependTo('#comment-list');
+                        }
+                        $('#comment-form-modal').modal('hide');
+                        $form[0].reset();
                     }
-                    $('#comment-form-modal').modal('hide');
-                    $form[0].reset();
+                },
+                error: function(xhr, textStatus, error) {
+                    alert('failed : '+ error);
+                },
+                complete: function(xhr, textStatus) {
+                    //$submit.prop('disabled', false);                    
                 }
-            })
-            .fail(function(xhr, textStatus, error) {
-                alert('failed :' +error)
-            })
-            .always(function() {
-                $submit.prop('disabled', false);
             });
         });
 
@@ -92,7 +92,7 @@
                     alert('failed : ' + error);
                 });
             }
-        });
+        })
     });
 </script>
 {% endblock %}
