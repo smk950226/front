@@ -55,6 +55,7 @@ post_new = CreateView.as_view(model=Post, fields='__all__')
 
 class CommentListView(ListView):
     model = Comment
+    paginate_by = 5
 
     def get_queryset(self):
         qs = super().get_queryset()
