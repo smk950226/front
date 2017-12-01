@@ -92,7 +92,15 @@
                     alert('failed : ' + error);
                 });
             }
+        });
+
+        $.get('{% url "blog:comment_list" post.pk %}')
+        .done(function(html) {
+            $('#comment-list').html(html);
         })
+        .fail(function(xhr, textStatus, error) {
+            alert('failed : ' + error);
+        });
     });
 </script>
 {% endblock %}
@@ -108,13 +116,11 @@
                 <hr>
                 
                 <a href="{% url "blog:comment_new" post.pk %}" class="comment-form-btn btn btn-primary btn-block">댓글쓰기</a>
-                
+
+                <a href="" class="btn btn-primary btn-block">새 댓글 확인</a>
                 <div id="comment-list">
-                    {% for comment in post.comment_set.all %}
-                        {% include "blog/_comment.html" %}
-                    {% endfor %}
                 </div>
-                
+       
                 <hr>
                 
                 <a href="{% url "blog:index" %}" class="btn btn-primary">목록</a>

@@ -53,6 +53,16 @@ post_delete = PostDeleteView.as_view()
 
 post_new = CreateView.as_view(model=Post, fields='__all__')
 
+class CommentListView(ListView):
+    model = Comment
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(post__id = self.kwargs['post_pk'])
+        return qs
+
+
+comment_list = CommentListView.as_view()
 
 class CommentCreateView(CreateView):
     model = Comment
