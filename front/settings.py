@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'rest_framework',
     'bootstrap3',
+    'chartjs',
     'blog',
     'accounts',
     'chart',
